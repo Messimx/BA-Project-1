@@ -2,9 +2,11 @@ Moviedata0<-read.csv("https://data.world/data-society/imdb-5000-movie-dataset/wo
 datatype<-as.data.frame(sapply(Moviedata0,class))
 Moviedata0$revenue<-Moviedata0$gross-Moviedata0$budget
 
+
 #Filter dataset
-#1.Delete data before 2005
+#1.Delete data before 2001
 Moviedata1<-subset(Moviedata0,title_year>=2001)
+Moviedata1<-Moviedata1[complete.cases(Moviedata1),]
 
 #2.Extract parameters data from original dataset
 Moviedata2<-subset(Moviedata1,select = c(movie_title,
@@ -58,8 +60,5 @@ cordf1<-cor(Moviedata3,use = "complete.obs")
 cordf1
 
 #Normalization
-normalization<-function(x){
-  norm.max=max(x,na.rm=TRUE)
-  norm<-x/norm.max*100
-}
-Moviedata4<-sapply(Moviedata3,normalization)
+Moviedata4<-sapply(Moviedata3,scale)
+boxplot(Moviedata4,outline = FALSE)
