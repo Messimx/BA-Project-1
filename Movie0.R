@@ -1,4 +1,6 @@
-Moviedata0<-read.csv("https://data.world/data-society/imdb-5000-movie-dataset/workspace/file?filename=movie_metadata.csv", header=TRUE, stringsAsFactors = FALSE)
+library(corrplot)
+
+Moviedata0<-read.csv("C:/Users/Messi/Downloads/metadata2.csv", header=TRUE, stringsAsFactors = FALSE)
 datatype<-as.data.frame(sapply(Moviedata0,class))
 Moviedata0$revenue<-Moviedata0$gross-Moviedata0$budget
 
@@ -12,10 +14,8 @@ Moviedata1<-Moviedata1[complete.cases(Moviedata1),]
 Moviedata2<-subset(Moviedata1,select = c(movie_title,
                                          gross,
                                          budget,
-                                         revenue,
                                          movie_facebook_likes,
                                          cast_total_facebook_likes,
-                                         director_facebook_likes,
                                          num_user_for_reviews,
                                          num_critic_for_reviews,
                                          imdb_score
@@ -60,5 +60,13 @@ cordf1<-cor(Moviedata3,use = "complete.obs")
 cordf1
 
 #Normalization
-Moviedata4<-sapply(Moviedata3,scale)
-boxplot(Moviedata4,outline = FALSE)
+norm.fun<-function(x){
+  norm.max<-max(x,na.rm=TRUE)
+  norm.result<-x/norm.max*100
+}
+Moviedata4<-as.data.frame(sapply(Moviedata3,norm.fun))
+boxplot(Moviedata4,outline = FALSE,color="green")
+summary.Moviedata4<-sapply(Moviedata4,descriptive.summary)
+corrplot(cor(Moviedata4,use = "complete.obs"), method=c("number"))
+
+
