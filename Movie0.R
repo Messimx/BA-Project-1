@@ -1,4 +1,4 @@
-Moviedata0<-read.csv("C:/Users/Messi/Desktop/Classes/BusinessAnalytics/Project/movie_metadata.csv", header=TRUE, stringsAsFactors = FALSE)
+Moviedata0<-read.csv("https://data.world/data-society/imdb-5000-movie-dataset/workspace/file?filename=movie_metadata.csv", header=TRUE, stringsAsFactors = FALSE)
 datatype<-as.data.frame(sapply(Moviedata0,class))
 Moviedata0$revenue<-Moviedata0$gross-Moviedata0$budget
 
