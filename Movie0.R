@@ -1,17 +1,14 @@
 library(corrplot)
 
-Moviedata0<-read.csv("C:/Users/Messi/Downloads/metadata2.csv", header=TRUE, stringsAsFactors = FALSE)
-datatype<-as.data.frame(sapply(Moviedata0,class))
-Moviedata0$revenue<-Moviedata0$gross-Moviedata0$budget
-
+dataframe0<-read.csv("C:/Users/Messi/Downloads/metadata2.csv", header=TRUE, stringsAsFactors = FALSE)
+datatype<-as.data.frame(sapply(dataframe0,class))
 
 #Filter dataset
-#1.Delete data before 2001
-Moviedata1<-subset(Moviedata0,title_year>=2001)
-Moviedata1<-Moviedata1[complete.cases(Moviedata1),]
+#1.Delete NA values
+dataframe1<-dataframe0[complete.cases(dataframe0),]
 
 #2.Extract parameters data from original dataset
-Moviedata2<-subset(Moviedata1,select = c(movie_title,
+dataframe2<-subset(dataframe1,select = c(movie_title,
                                          gross,
                                          budget,
                                          movie_facebook_likes,
@@ -20,7 +17,7 @@ Moviedata2<-subset(Moviedata1,select = c(movie_title,
                                          num_critic_for_reviews,
                                          imdb_score
                                          ))
-Moviedata3<-Moviedata2[-1]
+dataframe3<-dataframe2[-1]
 
 #Descriptive analysis of Xs
 #mode function
@@ -54,9 +51,9 @@ descriptive.summary<-function(x)list(mean = mean(x,na.rm=TRUE),
                                      cv=(sd(x,na.rm = TRUE))/(mean(x,na.rm=TRUE)),
                                      confidence99_from=confidence99lower(x),
                                      confidence99_to=confidence99upper(x))
-descriptive.x<-sapply(Moviedata3,descriptive.summary)
+descriptive.x<-sapply(dataframe3,descriptive.summary)
 descriptive.x
-cordf1<-cor(Moviedata3,use = "complete.obs")
+cordf1<-cor(dataframe3,use = "complete.obs")
 cordf1
 
 #Normalization
@@ -64,9 +61,19 @@ norm.fun<-function(x){
   norm.max<-max(x,na.rm=TRUE)
   norm.result<-x/norm.max*100
 }
-Moviedata4<-as.data.frame(sapply(Moviedata3,norm.fun))
-boxplot(Moviedata4,outline = FALSE,color="green")
-summary.Moviedata4<-sapply(Moviedata4,descriptive.summary)
-corrplot(cor(Moviedata4,use = "complete.obs"), method=c("number"))
+dataframe4<-as.data.frame(sapply(dataframe3,norm.fun))
+boxplot(dataframe4,outline = FALSE,color="green")
+summary.dataframe4<-sapply(dataframe4,descriptive.summary)
+cordf2<-as.data.frame(cor(dataframe4,use = "complete.obs"))
+corrplot(cordf2, method=c("number"))
 
+#Assigning weights
+cal_weight<-function(x){
+  var.cv=(sd(x,na.rm = TRUE))/(mean(x,na.rm=TRUE))
+  var.weight=cv/sum(summary.dataframe4$cv)
+}
+var_weight<-sapply(dataframe4,cal_weight)
 
+#Calculate the index value
+dataframe5$Name<-dataframe2[1]
+dataframe5$Index<-rowSum(t(dataframe5)*var_weight)
