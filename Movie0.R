@@ -56,3 +56,10 @@ descriptive.x<-sapply(Moviedata3,descriptive.summary)
 descriptive.x
 cordf1<-cor(Moviedata3,use = "complete.obs")
 cordf1
+
+#Normalization
+normalization<-function(x){
+  norm.max=max(x,na.rm=TRUE)
+  norm<-x/norm.max*100
+}
+Moviedata4<-sapply(Moviedata3,normalization)
