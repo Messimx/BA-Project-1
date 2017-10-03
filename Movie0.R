@@ -1,23 +1,14 @@
 library(corrplot)
+install.packages("corrgram")
+library(corrgram)
 
-dataframe0<-read.csv("C:/Users/Messi/Downloads/metadata2.csv", header=TRUE, stringsAsFactors = FALSE)
+dataframe0<-read.csv("https://raw.githubusercontent.com/Messimx/BA-Project-1/master/Final%20dataset%20(1).csv", header=TRUE, stringsAsFactors = FALSE)
 datatype<-as.data.frame(sapply(dataframe0,class))
 
 #Filter dataset
-#1.Delete NA values
-dataframe1<-dataframe0[complete.cases(dataframe0),]
+dataframe1<-dataframe0[-1]
+dataframe1$Net.Trade..Exports...Imports..in....<-NULL
 
-#2.Extract parameters data from original dataset
-dataframe2<-subset(dataframe1,select = c(movie_title,
-                                         gross,
-                                         budget,
-                                         movie_facebook_likes,
-                                         cast_total_facebook_likes,
-                                         num_user_for_reviews,
-                                         num_critic_for_reviews,
-                                         imdb_score
-                                         ))
-dataframe3<-dataframe2[-1]
 
 #Descriptive analysis of Xs
 #mode function
@@ -51,9 +42,9 @@ descriptive.summary<-function(x)list(mean = mean(x,na.rm=TRUE),
                                      cv=(sd(x,na.rm = TRUE))/(mean(x,na.rm=TRUE)),
                                      confidence99_from=confidence99lower(x),
                                      confidence99_to=confidence99upper(x))
-descriptive.x<-sapply(dataframe3,descriptive.summary)
+descriptive.x<-sapply(dataframe1,descriptive.summary)
 descriptive.x
-cordf1<-cor(dataframe3,use = "complete.obs")
+cordf1<-cor(dataframe1,use = "complete.obs")
 cordf1
 
 #Normalization
@@ -61,19 +52,9 @@ norm.fun<-function(x){
   norm.max<-max(x,na.rm=TRUE)
   norm.result<-x/norm.max*100
 }
-dataframe4<-as.data.frame(sapply(dataframe3,norm.fun))
-boxplot(dataframe4,outline = FALSE,color="green")
-summary.dataframe4<-sapply(dataframe4,descriptive.summary)
-cordf2<-as.data.frame(cor(dataframe4,use = "complete.obs"))
-corrplot(cordf2, method=c("number"))
-
-#Assigning weights
-cal_weight<-function(x){
-  var.cv=(sd(x,na.rm = TRUE))/(mean(x,na.rm=TRUE))
-  var.weight=cv/sum(summary.dataframe4$cv)
-}
-var_weight<-sapply(dataframe4,cal_weight)
-
-#Calculate the index value
-dataframe5$Name<-dataframe2[1]
-dataframe5$Index<-rowSum(t(dataframe5)*var_weight)
+dataframe2<-as.data.frame(sapply(dataframe1,norm.fun))
+boxplot(dataframe2,outline = FALSE,color="green")
+summary.dataframe2<-sapply(dataframe2,descriptive.summary)
+cordf2<-as.data.frame(cor(dataframe2,use = "complete.obs"))
+corrgram(cordf2, order = TRUE, upper.panel = panel.cor,main = "cordf2",col.regions = colorRampPalette(c(
+  "darkred", "blue")))
