@@ -80,6 +80,12 @@ weights_var[2:27,]<-weights_var
 dataframe2$Index<-rowSums(dataframe2*weights_var)
 dataframe2$Name<-dataframe0$Country.Name
 
+#Barplot for index
 rank_Index<-dataframe2[order(dataframe2$Index,decreasing=TRUE),]
 barplot(rank_Index$Index, col = "blue",names.arg=rank_Index$Name,las=2,
-        main="Rank of Countries",ylab="Index Values")
+        main="Rank of Countries for Business",ylab="Index Values")
+
+#Barplot for GDP
+rank_GDP<-dataframe2[order(dataframe2$GDP,decreasing=TRUE),]
+barplot(rank_GDP$GDP, col = "Green",names.arg=rank_GDP$Name,las=2,
+        main="Rank of Countries for GDP",ylab="GDP")
