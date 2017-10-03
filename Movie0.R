@@ -78,4 +78,8 @@ weights_var[2:27,]<-weights_var
 
 #Calculate the index value
 dataframe2$Index<-rowSums(dataframe2*weights_var)
-dataframe2$Name<-dataframe0[1]
+dataframe2$Name<-dataframe0$Country.Name
+
+rank_Index<-dataframe2[order(dataframe2$Index,decreasing=TRUE),]
+barplot(rank_Index$Index, col = "blue",names.arg=rank_Index$Name,las=2,
+        main="Rank of Countries",ylab="Index Values")
